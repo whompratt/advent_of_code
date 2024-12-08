@@ -10,15 +10,28 @@ fn main() {
 }
 
 fn part_2(input: &str) -> i32 {
-    let re = Regex::new(r#"mul\((?P<first>[\d]{1,3}),(?P<second>[\d]{1,3})\)"#).unwrap();
+    let re = Regex::new(r#"(mul\((?<op1>[0-9]+),(?<op2>[0-9]+)\))|(?<dt>don't\(\))|(?<d>do\(\))"#)
+        .unwrap();
 
-    let mut result: i32 = 0;
-    for (_, [first, second]) in re.captures_iter(input).map(|c| c.extract()) {
-        let mul = first.parse::<i32>().unwrap() * second.parse::<i32>().unwrap();
-        result += mul;
+    let mut pairs: Vec<(i32, i32)> = vec![];
+    let mut flag: bool = true;
+
+    for captures in re.captures_iter(input) {
+        if let Some(_) = captures.name("d") {
+            flag = true;
+        } else if let Some(_) = captures.name("dt") {
+            flag = false;
+        } else if let (Some(op1), Some(op2)) = (captures.name("op1"), captures.name("op2")) {
+            if flag {
+                pairs.push((
+                    op1.as_str().parse::<i32>().unwrap(),
+                    op2.as_str().parse::<i32>().unwrap(),
+                ));
+            }
+        }
     }
 
-    return result;
+    return pairs.iter().fold(0, |sum, e| sum + (e.0 * e.1));
 }
 
 #[cfg(test)]
@@ -27,13 +40,10 @@ mod tests {
 
     #[test]
     fn test_part_2() {
-        let input = r#"7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9"#;
+        let input = r#"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"#;
+        let expected: i32 = 48;
+        let actual: i32 = part_2(&input);
 
-        assert_eq!(part_2(input), 0);
+        assert_eq!(actual, expected);
     }
 }
