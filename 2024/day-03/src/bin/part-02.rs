@@ -10,8 +10,9 @@ fn main() {
 }
 
 fn part_2(input: &str) -> i32 {
-    let re = Regex::new(r#"(mul\((?<op1>[0-9]+),(?<op2>[0-9]+)\))|(?<dt>don't\(\))|(?<d>do\(\))"#)
-        .unwrap();
+    let re =
+        Regex::new(r#"(mul\((?<first>[0-9]+),(?<second>[0-9]+)\))|(?<dt>don't\(\))|(?<d>do\(\))"#)
+            .unwrap();
 
     let mut pairs: Vec<(i32, i32)> = vec![];
     let mut flag: bool = true;
@@ -21,11 +22,13 @@ fn part_2(input: &str) -> i32 {
             flag = true;
         } else if let Some(_) = captures.name("dt") {
             flag = false;
-        } else if let (Some(op1), Some(op2)) = (captures.name("op1"), captures.name("op2")) {
+        } else if let (Some(first), Some(second)) =
+            (captures.name("first"), captures.name("second"))
+        {
             if flag {
                 pairs.push((
-                    op1.as_str().parse::<i32>().unwrap(),
-                    op2.as_str().parse::<i32>().unwrap(),
+                    first.as_str().parse::<i32>().unwrap(),
+                    second.as_str().parse::<i32>().unwrap(),
                 ));
             }
         }
