@@ -1,4 +1,8 @@
 debug/
 target/
 
+.env
+.envrc
+*.txt
+
 Cargo.lock

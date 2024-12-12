@@ -1,16 +1,7 @@
-use std::{
-    collections::{BinaryHeap, HashMap},
-    fs,
-};
+use std::collections::{BinaryHeap, HashMap};
 
-fn main() {
-    let input = fs::read_to_string("./data/day-01.txt").expect("Unable to read file");
-    let similarity = part_2(&input);
-
-    println!("Similarity: {}", similarity);
-}
-
-fn part_2(input: &str) -> i32 {
+#[tracing::instrument]
+pub fn process(input: &str) -> miette::Result<String> {
     let mut heap_left: BinaryHeap<i32> = BinaryHeap::new();
     let mut heap_right: BinaryHeap<i32> = BinaryHeap::new();
 
@@ -32,21 +23,22 @@ fn part_2(input: &str) -> i32 {
         running += left * *counts.entry(left).or_insert(0);
     }
 
-    return running;
+    return Ok(format!("{}", running));
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::part_2;
+    use super::*;
+
     #[test]
-    fn test_part_2() {
-        let input = r#"3   4
+    fn test_process() -> miette::Result<()> {
+        let input = "3   4
 4   3
 2   5
 1   3
 3   9
-3   3"#;
-
-        assert_eq!(part_2(input), 31);
+3   3";
+        assert_eq!("31", process(input)?);
+        Ok(())
     }
 }
