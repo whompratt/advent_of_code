@@ -1,12 +1,3 @@
-use std::fs;
-
-fn main() {
-    let input = fs::read_to_string("./data/day-02.txt").expect("Unable to read file");
-    let safe_count = part_1(&input);
-
-    println!("Safe count: {}", safe_count);
-}
-
 enum Direction {
     Ascending,
     Descending,
@@ -21,7 +12,8 @@ impl Direction {
     }
 }
 
-fn part_1(input: &str) -> i32 {
+#[tracing::instrument]
+pub fn process(input: &str) -> miette::Result<String> {
     let mut safe_count: i32 = 0;
 
     for line in input.lines() {
@@ -49,22 +41,22 @@ fn part_1(input: &str) -> i32 {
         };
     }
 
-    return safe_count;
+    return Ok(safe_count.to_string());
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::part_1;
+    use super::*;
 
     #[test]
-    fn test_part_1() {
-        let input = r#"7 6 4 2 1
+    fn test_process() -> miette::Result<()> {
+        let input = "7 6 4 2 1
 1 2 7 8 9
 9 7 6 2 1
 1 3 2 4 5
 8 6 4 4 1
-1 3 6 7 9"#;
-
-        assert_eq!(part_1(input), 2);
+1 3 6 7 9";
+        assert_eq!("2", process(input)?);
+        Ok(())
     }
 }
